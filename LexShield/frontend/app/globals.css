@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #1a1f36;
+  --foreground: #ffffff;
+  --font-cormorant: 'Cormorant Garamond', serif;
+  --font-inter: 'Inter', sans-serif;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-inter);
+}
+
+h1, h2, h3, h4, .font-serif {
+  font-family: var(--font-cormorant);
+}
+
+.gold-border {
+  border: 1px solid #C9A84C;
+}
+
+.glass-card {
+  background: rgba(45, 52, 77, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+}
