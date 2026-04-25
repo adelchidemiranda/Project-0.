@@ -10,7 +10,7 @@ type Project = {
     name: string;
     client_name: string | null;
     description: string | null;
-    document_count: int;
+    document_count: number;
 };
 
 export default function DashboardPage() {
