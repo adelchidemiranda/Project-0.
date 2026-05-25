@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { fetchApi } from "@/lib/api";
 
+
 // Document role options for support files
 const SUPPORT_ROLES = [
     { value: "atto_controparte", label: "Atto Controparte" },
@@ -38,6 +39,7 @@ type SupportFile = {
 
 export default function UploadPage() {
     const router = useRouter();
+
     const [step, setStep] = useState(1);
 
     // Step 1: Mode
@@ -54,6 +56,8 @@ export default function UploadPage() {
     // State
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+
+
 
     const addSupportFile = (file: File) => {
         setSupportFiles((prev) => [

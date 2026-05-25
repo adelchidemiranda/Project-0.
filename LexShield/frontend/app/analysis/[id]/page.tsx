@@ -5,6 +5,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { fetchApi } from "@/lib/api";
 
+
 type Finding = {
     id: string;
     severity: "Critical" | "High" | "Medium" | "Low";
@@ -89,6 +90,7 @@ export default function AnalysisWorkspacePage() {
     const sessionId = searchParams.get("session");
     const router = useRouter();
 
+
     const [analysis, setAnalysis] = useState<Analysis | null>(null);
     const [document, setDocument] = useState<Document | null>(null);
     const [selectedFinding, setSelectedFinding] = useState<string | null>(null);
@@ -96,6 +98,7 @@ export default function AnalysisWorkspacePage() {
     const [filterType, setFilterType] = useState<string>("all");
 
     useEffect(() => {
+
         let interval: NodeJS.Timeout;
 
         const loadData = async () => {
@@ -164,6 +167,8 @@ export default function AnalysisWorkspacePage() {
         interval = setInterval(checkSession, 3000);
         return () => clearInterval(interval);
     }, [sessionId, id]);
+
+
 
     if (loading || document?.status === "processing" || document?.status === "pending") {
         return (

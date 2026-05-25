@@ -53,3 +53,25 @@ async def get_current_user(
     if user is None or not user.is_active:
         raise credentials_exception
     return user
+
+
+async def get_anonymous_user(
+    db: AsyncSession = Depends(get_db),
+) -> User:
+    """Return a shared anonymous user, creating it on first use."""
+    result = await db.execute(
+        select(User).where(User.email == "anonymous@lexshield.local")
+    )
+    user = result.scalar_one_or_none()
+    if user is None:
+        user = User(
+            email="anonymous@lexshield.local",
+            hashed_password="not-used",
+            full_name="Utente Anonimo",
+            firm_name="LexShield",
+            role="lawyer",
+            is_active=True,
+        )
+        db.add(user)
+        await db.flush()
+    return user

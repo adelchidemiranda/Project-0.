@@ -13,7 +13,7 @@ from app.models import (
     Document, Analysis, Finding, AnalysisStatus, User,
     AnalysisSession, SessionDocument, AnalysisMode, SupportDocumentRole
 )
-from app.auth import get_current_user
+from app.auth import get_anonymous_user
 from app.config import get_settings
 from app.worker import run_analysis_task, run_session_analysis_task
 
@@ -70,7 +70,7 @@ async def upload_document(
     project_id: Optional[str] = Form(None),
     background_tasks: BackgroundTasks = BackgroundTasks(),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_anonymous_user),
 ):
     if not file and not pasted_text:
         raise HTTPException(status_code=400, detail="Provide either a file or pasted text")
@@ -105,7 +105,7 @@ async def create_analysis_session(
     support_roles: str = Form(default=""),  # comma-separated roles
     background_tasks: BackgroundTasks = BackgroundTasks(),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_anonymous_user),
 ):
     """
     Create a new analysis session with a main document and optional support documents.
@@ -186,10 +186,10 @@ async def create_analysis_session(
 async def get_document(
     doc_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_anonymous_user),
 ):
     result = await db.execute(
-        select(Document).where(Document.id == doc_id, Document.user_id == current_user.id)
+        select(Document).where(Document.id == doc_id)
     )
     doc = result.scalar_one_or_none()
     if not doc:
@@ -201,10 +201,10 @@ async def get_document(
 async def get_status(
     doc_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_anonymous_user),
 ):
     result = await db.execute(
-        select(Document).where(Document.id == doc_id, Document.user_id == current_user.id)
+        select(Document).where(Document.id == doc_id)
     )
     doc = result.scalar_one_or_none()
     if not doc:
@@ -216,12 +216,11 @@ async def get_status(
 async def get_session_status(
     session_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_anonymous_user),
 ):
     result = await db.execute(
         select(AnalysisSession).where(
-            AnalysisSession.id == session_id,
-            AnalysisSession.user_id == current_user.id
+            AnalysisSession.id == session_id
         )
     )
     session = result.scalar_one_or_none()

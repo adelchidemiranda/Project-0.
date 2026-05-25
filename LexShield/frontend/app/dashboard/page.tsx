@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { fetchApi } from "@/lib/api";
 
+
 type Project = {
     id: string;
     name: string;
@@ -15,6 +16,7 @@ type Project = {
 
 export default function DashboardPage() {
     const router = useRouter();
+
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -25,18 +27,15 @@ export default function DashboardPage() {
                 const data = await fetchApi("/projects/");
                 setProjects(data);
             } catch (err: any) {
-                if (err.message.includes("Could not validate credentials")) {
-                    localStorage.removeItem("token");
-                    router.push("/login");
-                } else {
-                    setError("Impossibile caricare i progetti.");
-                }
+                setError("Impossibile caricare i progetti.");
             } finally {
                 setLoading(false);
             }
         };
         loadProjects();
-    }, [router]);
+    }, []);
+
+
 
     return (
         <div className="min-h-screen bg-navy flex">
@@ -51,12 +50,9 @@ export default function DashboardPage() {
                         Nuova Analisi
                     </Link>
                 </nav>
-                <button
-                    onClick={() => { localStorage.removeItem("token"); router.push("/login"); }}
-                    className="text-gray-500 hover:text-white text-left px-4 py-2 text-sm"
-                >
-                    Disconnetti
-                </button>
+                <span className="text-gray-500 text-left px-4 py-2 text-sm">
+                    LexShield v1.0
+                </span>
             </aside>
 
             {/* Main Content */}

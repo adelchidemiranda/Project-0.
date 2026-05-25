@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import Optional
 from app.db.database import get_db
 from app.models import Project, Document, User
-from app.auth import get_current_user
+from app.auth import get_anonymous_user
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
@@ -30,10 +30,10 @@ class ProjectResponse(BaseModel):
 @router.get("/", response_model=list[ProjectResponse])
 async def list_projects(
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_anonymous_user),
 ):
     result = await db.execute(
-        select(Project).where(Project.user_id == current_user.id).order_by(Project.created_at.desc())
+        select(Project).order_by(Project.created_at.desc())
     )
     projects = result.scalars().all()
 
@@ -57,7 +57,7 @@ async def list_projects(
 async def create_project(
     req: ProjectCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_anonymous_user),
 ):
     project = Project(user_id=current_user.id, **req.model_dump())
     db.add(project)
@@ -69,10 +69,10 @@ async def create_project(
 async def get_project(
     project_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_anonymous_user),
 ):
     result = await db.execute(
-        select(Project).where(Project.id == project_id, Project.user_id == current_user.id)
+        select(Project).where(Project.id == project_id)
     )
     project = result.scalar_one_or_none()
     if not project:

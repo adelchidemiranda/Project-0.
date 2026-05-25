@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from typing import Optional
 from app.db.database import get_db
 from app.models import Document, Analysis, Finding, User, AnalysisSession, SessionDocument
-from app.auth import get_current_user
+from app.auth import get_anonymous_user
 from app.services.report import generate_pdf_report
 import io
 
@@ -76,11 +76,10 @@ class AnalysisResponse(BaseModel):
 async def get_analysis(
     document_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_anonymous_user),
 ):
-    # Verify ownership
     doc_result = await db.execute(
-        select(Document).where(Document.id == document_id, Document.user_id == current_user.id)
+        select(Document).where(Document.id == document_id)
     )
     doc = doc_result.scalar_one_or_none()
     if not doc:
@@ -144,13 +143,12 @@ async def get_analysis(
 async def get_session_analysis(
     session_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_anonymous_user),
 ):
     """Get analysis results for a complete session (main + support docs)."""
     session_result = await db.execute(
         select(AnalysisSession).where(
-            AnalysisSession.id == session_id,
-            AnalysisSession.user_id == current_user.id,
+            AnalysisSession.id == session_id
         )
     )
     session = session_result.scalar_one_or_none()
@@ -207,10 +205,10 @@ async def get_session_analysis(
 async def export_report(
     document_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_anonymous_user),
 ):
     doc_result = await db.execute(
-        select(Document).where(Document.id == document_id, Document.user_id == current_user.id)
+        select(Document).where(Document.id == document_id)
     )
     doc = doc_result.scalar_one_or_none()
     if not doc:
@@ -242,7 +240,7 @@ async def flag_finding(
     document_id: str,
     finding_id: str,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_anonymous_user),
 ):
     finding_result = await db.execute(
         select(Finding).where(Finding.id == finding_id)
